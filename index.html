@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Secret Generator</title>
+<style>
+body{
+  background:#0f172a;
+  color:#e5e7eb;
+  font-family:Arial;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.box{
+  width:350px;
+  background:#020617;
+  padding:20px;
+  border-radius:12px;
+}
+input, textarea, button{
+  width:100%;
+  margin:8px 0;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+}
+button{
+  background:#22c55e;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>🔐 Secret Generator</h2>
+
+<textarea id="msg" placeholder="Enter secret message"></textarea>
+<input id="pass" type="password" placeholder="Set password (one-time)">
+<input id="time" placeholder="Expiry (e.g. 90s / 10m / 1h)">
+<button onclick="generate()">Generate Link</button>
+
+<input id="out" readonly placeholder="Generated link will appear here">
+</div>
+
+<script>
+function parseTime(t){
+  if(t.endsWith("s")) return parseInt(t)*1000;
+  if(t.endsWith("m")) return parseInt(t)*60000;
+  if(t.endsWith("h")) return parseInt(t)*3600000;
+  return parseInt(t)*1000;
+}
+
+function generate(){
+  const msg = document.getElementById("msg").value;
+  const pass = document.getElementById("pass").value;
+  const time = parseTime(document.getElementById("time").value);
+
+  if(!msg || !pass || !time) return alert("Fill all fields");
+
+  const data = {
+    m: msg,
+    p: btoa(pass),
+    e: Date.now() + time
+  };
+
+  const encoded = btoa(JSON.stringify(data));
+  const link = `https://rehanalam0987.github.io/secret-viewer/?s=${encoded}`;
+
+  document.getElementById("out").value = link;
+}
+</script>
+
+</body>
+</html>
