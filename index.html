@@ -3,81 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <title>Secret Viewer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body{
+  margin:0;
   background:#020617;
   color:#e5e7eb;
-  font-family:Arial;
+  font-family:Arial, sans-serif;
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
 }
+
 .box{
   width:360px;
   background:#0f172a;
-  padding:20px;
+  padding:22px;
   border-radius:14px;
   text-align:center;
+  box-shadow:0 0 25px #000;
 }
-input,button{
+
+input, button{
   width:100%;
-  margin-top:10px;
-  padding:10px;
+  margin-top:12px;
+  padding:11px;
   border-radius:8px;
   border:none;
+  font-size:14px;
 }
+
 button{
   background:#38bdf8;
   font-weight:bold;
   cursor:pointer;
 }
+
 .msg{
   margin-top:15px;
   background:#020617;
-  padding:12px;
+  padding:14px;
   border-radius:10px;
   word-wrap:break-word;
 }
+
+footer{
+  position:fixed;
+  bottom:10px;
+  width:100%;
+  text-align:center;
+  font-size:13px;
+  color:#94a3b8;
+}
 </style>
 </head>
+
 <body>
 
-<div class="box">
-  <h2>🔓 View Secret</h2>
-  <input id="pass" type="password" placeholder="Enter password">
-  <button onclick="unlock()">Unlock</button>
-  <div id="res"></div>
+<div class="box" id="box">
+  <h2>🔐 Secret Viewer</h2>
+  <p style="color:#94a3b8;font-size:14px;">
+    This is a secure secret message viewer.<br>
+    Open a valid secret link to continue.
+  </p>
 </div>
+
+<footer>
+  Developer :- <b style="color:#38bdf8;">Mahan Rehan</b> 🚀
+</footer>
 
 <script>
 const params = new URLSearchParams(location.search);
 const raw = params.get("s");
+const box = document.getElementById("box");
 
-let data;
-try{
-  data = JSON.parse(atob(raw));
-}catch{
-  document.body.innerHTML = "❌ Invalid or broken link";
-}
-
-function unlock(){
-  if(Date.now() > data.e){
-    document.getElementById("res").innerHTML = "⏳ Link Expired";
-    return;
+if(raw){
+  let data;
+  try{
+    data = JSON.parse(atob(raw));
+  }catch(e){
+    box.innerHTML = "<h3>❌ Invalid or broken link</h3>";
+    throw "Invalid";
   }
 
-  const p = document.getElementById("pass").value;
-  if(btoa(p) !== data.p){
-    alert("❌ Wrong password");
-    return;
-  }
+  box.innerHTML = `
+    <h2>🔓 Unlock Secret</h2>
+    <input id="pass" type="password" placeholder="Enter password">
+    <button onclick="unlock()">Unlock</button>
+    <div id="res"></div>
+  `;
 
-  document.getElementById("res").innerHTML =
-    `<div class="msg">${data.m}</div>`;
+  window.unlock = function(){
+    if(Date.now() > data.e){
+      document.getElementById("res").innerHTML = "⏳ Link Expired";
+      return;
+    }
+
+    const p = document.getElementById("pass").value;
+    if(btoa(p) !== data.p){
+      alert("❌ Wrong password");
+      return;
+    }
+
+    document.getElementById("res").innerHTML =
+      `<div class="msg">${data.m}</div>`;
+  };
 }
 </script>
 
 </body>
 </html>
+
 
